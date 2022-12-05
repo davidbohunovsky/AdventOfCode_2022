@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.Design;
-using System.Text;
-using Microsoft.VisualBasic;
+﻿using System.Text;
 
 string trainDataPath = @"TestFiles\trainData.txt";
 string testDataPath = @"TestFiles\testData.txt";
