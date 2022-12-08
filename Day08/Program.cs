@@ -6,17 +6,17 @@ var lines = File.ReadAllLines(testDataPath);
 var WIDTH = lines[0].Length;
 var HEIGHT = lines.Length;
 
-Console.WriteLine($"W:{WIDTH} H:{HEIGHT}");
+//Console.WriteLine($"W:{WIDTH} H:{HEIGHT}");
 
 var forest = new int[WIDTH][];
 
 int VisibleTrees(int[][] forest, int W, int H)
 {
     var edgeCount = EdgeCount();
-    Console.WriteLine(edgeCount);
+    //Console.WriteLine(edgeCount);
     
     var interior = InteriorCount();
-    Console.WriteLine(interior);
+    //Console.WriteLine(interior);
     
     return edgeCount + interior;
 
@@ -42,38 +42,18 @@ int VisibleTrees(int[][] forest, int W, int H)
     bool VisibleFromAnySide(int tx, int ty)
     {
         if (forest[tx][ty] == 0) return false;
+
+        var left = forest[tx][..ty].All(y => y < forest[tx][ty]);
+        if (left) return true;
         
-        var top = true;
-        var bottom = true;
-        var left = true;
-        var right = true;
-
-        for (var x = tx - 1; x > -1; x--)
-        {
-            if (forest[x][ty] >= forest[tx][ty]) 
-                left = false;
-        }
+        var right = forest[tx][(ty + 1)..].All(y => y < forest[tx][ty]);
+        if (right) return true;
         
-        for (var x = tx + 1; x < W; x++)
-        {
-            if (forest[x][ty] >= forest[tx][ty]) 
-                right = false;
-        }
-
-        for (var y = ty - 1; y > -1; y--)
-        {
-            if (forest[tx][y] >= forest[tx][ty])
-                top = false;
-        }
-
-        for (var y = ty + 1; y < H; y++)
-        {
-            if (forest[tx][y] >= forest[tx][ty])
-                bottom = false;
-        }
-
-        //Console.WriteLine($"{forest[tx][ty]} - {top || bottom || left || right}");
-        return top || bottom || left || right;
+        var bottom = forest[(tx + 1)..].All(x => x[ty] < forest[tx][ty]);
+        if (bottom) return true;
+        
+        var top = forest[..tx].All(x => x[ty] < forest[tx][ty]);
+        return top;
     }
 }
 
@@ -96,40 +76,31 @@ int ScenicScore(int[][] forest, int W, int H)
     int CalculateScenicScore(int tx, int ty)
     {
         if (forest[tx][ty] == 0) return 0;
-
+        
         var top = 0;
         var bottom = 0;
         var left = 0;
         var right = 0;
-        
-        for (var x = tx - 1; x > -1; x--)
+
+        foreach (var x in forest[tx][..ty].Select(y => y).Reverse())
         {
             left++;
-            if (forest[x][ty] >= forest[tx][ty])
-                break;
+            if (x >= forest[tx][ty]) break;
         }
-        
-        for (var x = tx + 1; x < W; x++)
+        foreach (var x in forest[tx][(ty + 1)..].Select(y => y))
         {
             right++;
-            if (forest[x][ty] >= forest[tx][ty]) 
-                break;
+            if (x >= forest[tx][ty]) break;
         }
-
-        for (var y = ty - 1; y > -1; y--)
-        {
-            top++;
-            if (forest[tx][y] >= forest[tx][ty])
-                break;
-        }
-
-        for (var y = ty + 1; y < H; y++)
+        foreach (var x in forest[(tx + 1)..].Select(x => x[ty]))
         {
             bottom++;
-            if (forest[tx][y] >= forest[tx][ty])
-                break;
-
-          
+            if (x >= forest[tx][ty]) break;
+        }
+        foreach (var x in forest[..tx].Select(x => x[ty]).Reverse())
+        {
+            top++;
+            if (x >= forest[tx][ty]) break;
         }
         
         return left * right * top * bottom;
