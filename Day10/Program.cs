@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Day10;
-using Microsoft.VisualBasic.FileIO;
 
 string trainDataPath = @"TestFiles\trainData.txt";
 string trainData2Path = @"TestFiles\trainData2.txt";
