@@ -44,13 +44,16 @@ Monkey ParseInput(string input)
     return new Monkey(index,startingItems, inputLines[2], divideTest, trueMonkey, falseMonkey);
 }
 
-var monkeys = File.ReadAllText(trainDataPath)
+var monkeys = File.ReadAllText(testDataPath)
     .Split("\r\n\r\n")
     .Select(ParseInput)
     .ToList();
 
-var round = 20;
+var round = 10000;
 bool condition = false;
+
+// Nejmensi spolecny nasobek
+var modulo = monkeys.Select(m => m.Divider).Aggregate(1,(current,next) => current * next);
 
 for (var i = 0; i < round; i++)
 {
@@ -58,7 +61,7 @@ for (var i = 0; i < round; i++)
     {
         while (monkey.HasItems)
         {
-            var inspectedItem = monkey.Inspect(condition);
+            var inspectedItem = monkey.Inspect(condition,modulo);
             monkeys[inspectedItem.MonkeyIndex].AddItem(inspectedItem.Value);
         }
     }

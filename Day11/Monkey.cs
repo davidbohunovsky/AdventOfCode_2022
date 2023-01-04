@@ -14,7 +14,9 @@ public class Monkey
     private readonly int _trueMonkey;
     private readonly int _falseMonkey;
 
-    public int InspectedItems { get; private set; } = 0;
+    public int Divider => _testDivider;
+    
+    public long InspectedItems { get; private set; } = 0;
     
     public Monkey(int index, List<int> startingItems, string operation, int testDivider, int trueMonkey, int falseMonkey)
     {
@@ -26,17 +28,20 @@ public class Monkey
         _falseMonkey = falseMonkey;
     }
     
-    public (long Value, int MonkeyIndex) Inspect(bool condition)
+    public (long Value, int MonkeyIndex) Inspect(bool condition, int modulo = 0)
     {
         InspectedItems++;
         var item = _items.Dequeue();
-
-
+        
         item = Operation(item);
 
         if (condition)
             item /= 3;
-
+        else
+        {
+            item %= modulo;
+        }
+        
         var index = item % _testDivider == 0 ? _trueMonkey : _falseMonkey;
         return (item, index);
     }
